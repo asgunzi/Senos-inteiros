@@ -1,0 +1,196 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/>
+
+<style>
+.slider{
+width:500px;
+}
+</style>
+
+ <title>Seno de inteiros</title>
+ 
+<script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+<body>
+
+      <h1><a href="https://ideiasesquecidas.com"> <img src=	"https://ideiasesquecidas.files.wordpress.com/2020/03/forgottenlogo.png" width="90" height = "50"></a> Seno de inteiros</h1>
+
+<form>
+    <input type="radio" name="choice" value="Linear" id="choice-lin" onchange="Desenhar()"> 
+    <label for="choice-lin">Linear</label>
+    <input type="radio" name="choice" value="Log" id="choice-log"  onchange="Desenhar()">
+    <label for="choice-log">Log</label>
+</form>
+
+<div class="slidecontainer">
+  <input type="range" min="1" max="5000" value="500" class="slider" id="myRange" oninput="Desenhar()">
+</div>	
+
+<h2 id="lbl1"></h2>
+
+
+
+<script type = "text/javascript">
+    var svg = d3.select("body")
+        .append("svg")
+        .attr("width", 1020)
+        .attr("height", 600);
+
+	radiobtn = document.getElementById("choice-lin");
+    radiobtn.checked = true;
+   
+	Desenhar();
+
+
+	
+	function Desenhar()
+	{
+	svg.selectAll("*").remove();
+
+	var N = d3.select("#myRange").property("value");
+	var Nlog;
+	var NlabelMax;
+	
+	Nlog = Math.floor(Math.log10(N));
+	NlabelMax = Math.round(N / 10**Nlog);
+	
+	d3.select("#lbl1").text("N = " + N);
+
+	var x0=[];
+	var y0=[];
+	var dtempo =10;
+	var tempo=[];
+	var cor=[];
+	var boolLin=true;
+	var lblY=[];
+	var lblYposY=[];
+	
+	var lblX=[];
+	var lblXposX=[];
+	var i;
+
+	radiobtn = document.getElementById("choice-lin");
+	if (radiobtn.checked == true)
+	{
+		boolLin=true;
+	}
+	else
+	{
+		boolLin=false;
+	}
+	
+	for (i=1; i<=N;i++)
+	{
+		if (boolLin)
+		{
+			x0.push(i/N*1000);
+		}
+		else
+		{	x0.push(Math.log10(i)/Math.log10(N)*1000);
+		}
+			y0.push(Math.sin(i));
+			//tempo.push(i*dtempo);
+			cor.push("rgb(0,0," + Math.round(255 - i*180/N).toString() +")");					
+	}
+	
+
+	
+		svg.append("rect")
+			.attr("x", 20)
+			.attr("y", 0)
+			.attr("width", 1000)
+			.attr("height", 505)
+			.attr("fill", "white")
+			.attr("stroke", "black")
+		
+	//Círculos
+		var circle1 = svg.selectAll("circle")
+			.data(x0)
+			.enter()
+			.append("circle")
+			//.transition()
+			//.delay(function(d,i){ return tempo[i]})
+			//.duration(1)
+			.attr("cx", function(d,i){ return (x0[i]+20)} )
+			.attr("cy", function(d,i){ return (y0[i]*250)+250} )
+			.attr("r", 3)
+			.attr("fill",  function(d,i){ return (cor[i])} )
+			.attr("stroke", "black")
+				
+			
+	
+	
+	//Label X
+	if (boolLin)
+	{
+		for (i=1; i<=NlabelMax;i++)
+		{	
+		lblX.push(i* (10**Nlog));	
+		lblXposX.push( Math.round(i* (10**Nlog)/N*1000));
+		}
+	}
+	else
+	{
+		for (i=1; i<=NlabelMax;i++)
+		{	
+		lblX.push(i* (10**Nlog));	
+		lblXposX.push( Math.log10(i* (10**Nlog))/Math.log10(N)*1000);
+		}		
+	}
+	
+	var textX= svg.selectAll("text")
+			.data(lblXposX)
+			.enter()
+			.append("text")
+			.attr("x", function(d,i){ return (lblXposX[i]) -10} )
+			.attr("y", 525)
+			.text(function(d,i){ return (lblX[i])} )			
+			.attr("font-size", "15");
+			
+		var tickX= svg.selectAll("line")
+			.data(lblXposX)
+			.enter()
+			.append("line")
+			.attr("x1", function(d,i){ return (lblXposX[i])} )
+			.attr("y1", 505)
+			.attr("x2", function(d,i){ return (lblXposX[i])} )
+			.attr("y2", 510)
+			.attr("stroke", "black");
+	
+			
+	//Label Y
+		lblY.push(-1);
+	lblY.push(0);
+	lblY.push(1);
+	
+	lblYposY.push(500+9);
+	lblYposY.push(250+9);
+	lblYposY.push(1+9);
+	
+	svg.selectAll()
+			.data(lblYposY)
+			.enter()
+			.append("text")
+			.attr("x", 0)
+			.attr("y", function(d,i){ return (lblYposY[i])} )
+			.text(function(d,i){ return (lblY[i])} )			
+			.attr("font-size", "15");
+			
+		var tickY= svg.selectAll()
+			.data(lblYposY)
+			.enter()
+			.append("line")
+			.attr("x1", 13)
+			.attr("y1", function(d,i){ return (lblYposY[i])-7} )
+			.attr("x2", 20)
+			.attr("y2", function(d,i){ return (lblYposY[i])-7} )
+			.attr("stroke", "black");
+			
+	}
+	
+	
+  </script>
+</body>
+</html>
